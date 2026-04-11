@@ -28,7 +28,7 @@ function playCelebration(cheerText) {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
     // First: excited kid shout
-    const shout = new SpeechSynthesisUtterance("Yaaay!");
+    const shout = new SpeechSynthesisUtterance("Hurray!");
     shout.rate = 0.9;
     shout.pitch = 2.0;
     shout.volume = 1.0;
