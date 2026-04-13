@@ -22,26 +22,106 @@ const CATEGORIES = [
     emoji: "🐾",
     color: "from-amber-400 to-orange-500",
     cards: [
-      { name: "Dog", image: null, display: "🐕" },
-      { name: "Cat", image: null, display: "🐈" },
-      { name: "Elephant", image: null, display: "🐘" },
-      { name: "Lion", image: null, display: "🦁" },
-      { name: "Horse", image: null, display: "🐎" },
-      { name: "Cow", image: null, display: "🐄" },
-      { name: "Monkey", image: null, display: "🐒" },
-      { name: "Zebra", image: null, display: "🦓" },
-      { name: "Tiger", image: null, display: "🐅" },
-      { name: "Rabbit", image: null, display: "🐇" },
-      { name: "Giraffe", image: null, display: "🦒" },
-      { name: "Bear", image: null, display: "🐻" },
-      { name: "Deer", image: null, display: "🦌" },
-      { name: "Pig", image: null, display: "🐷" },
-      { name: "Sheep", image: null, display: "🐑" },
-      { name: "Frog", image: null, display: "🐸" },
-      { name: "Turtle", image: null, display: "🐢" },
-      { name: "Dolphin", image: null, display: "🐬" },
-      { name: "Whale", image: null, display: "🐋" },
-      { name: "Panda", image: null, display: "🐼" },
+      { name: "Dog", image: null, display: "🐕",
+        translations: {
+          "en-US": "Dog", "es-ES": "Perro", "fr-FR": "Chien", "hi-IN": "कुत्ता", "ml-IN": "നായ", "zh-CN": "狗", "ru-RU": "Собака"
+        }
+      },
+      { name: "Cat", image: null, display: "🐈",
+        translations: {
+          "en-US": "Cat", "es-ES": "Gato", "fr-FR": "Chat", "hi-IN": "बिल्ली", "ml-IN": "പൂച്ച", "zh-CN": "猫", "ru-RU": "Кошка"
+        }
+      },
+      { name: "Elephant", image: null, display: "🐘",
+        translations: {
+          "en-US": "Elephant", "es-ES": "Elefante", "fr-FR": "Éléphant", "hi-IN": "हाथी", "ml-IN": "ആന", "zh-CN": "大象", "ru-RU": "Слон"
+        }
+      },
+      { name: "Lion", image: null, display: "🦁",
+        translations: {
+          "en-US": "Lion", "es-ES": "León", "fr-FR": "Lion", "hi-IN": "सिंह", "ml-IN": "സിംഹം", "zh-CN": "狮子", "ru-RU": "Лев"
+        }
+      },
+      { name: "Horse", image: null, display: "🐎",
+        translations: {
+          "en-US": "Horse", "es-ES": "Caballo", "fr-FR": "Cheval", "hi-IN": "घोड़ा", "ml-IN": "കുതിര", "zh-CN": "马", "ru-RU": "Лошадь"
+        }
+      },
+      { name: "Cow", image: null, display: "🐄",
+        translations: {
+          "en-US": "Cow", "es-ES": "Vaca", "fr-FR": "Vache", "hi-IN": "गाय", "ml-IN": "പശു", "zh-CN": "奶牛", "ru-RU": "Корова"
+        }
+      },
+      { name: "Monkey", image: null, display: "🐒",
+        translations: {
+          "en-US": "Monkey", "es-ES": "Mono", "fr-FR": "Singe", "hi-IN": "बंदर", "ml-IN": "കുരങ്ങ്", "zh-CN": "猴子", "ru-RU": "Обезьяна"
+        }
+      },
+      { name: "Zebra", image: null, display: "🦓",
+        translations: {
+          "en-US": "Zebra", "es-ES": "Cebra", "fr-FR": "Zèbre", "hi-IN": "ज़ेब्रा", "ml-IN": "മാന്യ", "zh-CN": "斑马", "ru-RU": "Зебра"
+        }
+      },
+      { name: "Tiger", image: null, display: "🐅",
+        translations: {
+          "en-US": "Tiger", "es-ES": "Tigre", "fr-FR": "Tigre", "hi-IN": "बाघ", "ml-IN": "കഴുത", "zh-CN": "老虎", "ru-RU": "Тигр"
+        }
+      },
+      { name: "Rabbit", image: null, display: "🐇",
+        translations: {
+          "en-US": "Rabbit", "es-ES": "Conejo", "fr-FR": "Lapin", "hi-IN": "खरगोश", "ml-IN": "മൂഷികം", "zh-CN": "兔子", "ru-RU": "Кролик"
+        }
+      },
+      { name: "Giraffe", image: null, display: "🦒",
+        translations: {
+          "en-US": "Giraffe", "es-ES": "Jirafa", "fr-FR": "Girafe", "hi-IN": "जिराफ़", "ml-IN": "ജിറാഫ്", "zh-CN": "长颈鹿", "ru-RU": "Жираф"
+        }
+      },
+      { name: "Bear", image: null, display: "🐻",
+        translations: {
+          "en-US": "Bear", "es-ES": "Oso", "fr-FR": "Ours", "hi-IN": "भालू", "ml-IN": "കരടി", "zh-CN": "熊", "ru-RU": "Медведь"
+        }
+      },
+      { name: "Deer", image: null, display: "🦌",
+        translations: {
+          "en-US": "Deer", "es-ES": "Ciervo", "fr-FR": "Cerf", "hi-IN": "हिरन", "ml-IN": "മാൻ", "zh-CN": "鹿", "ru-RU": "Олень"
+        }
+      },
+      { name: "Pig", image: null, display: "🐷",
+        translations: {
+          "en-US": "Pig", "es-ES": "Cerdo", "fr-FR": "Cochon", "hi-IN": "सुअर", "ml-IN": "പന്നി", "zh-CN": "猪", "ru-RU": "Свинья"
+        }
+      },
+      { name: "Sheep", image: null, display: "🐑",
+        translations: {
+          "en-US": "Sheep", "es-ES": "Oveja", "fr-FR": "Mouton", "hi-IN": "भेड़", "ml-IN": "ആട്", "zh-CN": "羊", "ru-RU": "Овца"
+        }
+      },
+      { name: "Frog", image: null, display: "🐸",
+        translations: {
+          "en-US": "Frog", "es-ES": "Rana", "fr-FR": "Grenouille", "hi-IN": "मेंढक", "ml-IN": "തവള", "zh-CN": "青蛙", "ru-RU": "Лягушка"
+        }
+      },
+      { name: "Turtle", image: null, display: "🐢",
+        translations: {
+          "en-US": "Turtle", "es-ES": "Tortuga", "fr-FR": "Tortue", "hi-IN": "कछुआ", "ml-IN": "ആമ", "zh-CN": "乌龟", "ru-RU": "Черепаха"
+        }
+      },
+      { name: "Dolphin", image: null, display: "🐬",
+        translations: {
+          "en-US": "Dolphin", "es-ES": "Delfín", "fr-FR": "Dauphin", "hi-IN": "डॉल्फिन", "ml-IN": "ഡോൾഫിൻ", "zh-CN": "海豚", "ru-RU": "Дельфин"
+        }
+      },
+      { name: "Whale", image: null, display: "🐋",
+        translations: {
+          "en-US": "Whale", "es-ES": "Ballena", "fr-FR": "Baleine", "hi-IN": "व्हेल", "ml-IN": "തിമിംഗലം", "zh-CN": "鲸鱼", "ru-RU": "Кит"
+        }
+      },
+      { name: "Panda", image: null, display: "🐼",
+        translations: {
+          "en-US": "Panda", "es-ES": "Panda", "fr-FR": "Panda", "hi-IN": "पांडा", "ml-IN": "പാണ്ട", "zh-CN": "熊猫", "ru-RU": "Панда"
+        }
+      },
     ],
   },
   {

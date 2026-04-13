@@ -17,11 +17,27 @@ function emojiToTwemoji(emoji) {
 function speak(text, lang) {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
+    const synth = window.speechSynthesis;
+    const voices = synth.getVoices();
+    let voice = null;
+    // Malayalam fallback: if no ml-IN, try hi-IN, else default
+    if (lang === "ml-IN") {
+      voice = voices.find(v => v.lang === "ml-IN");
+      if (!voice) voice = voices.find(v => v.lang === "hi-IN");
+      if (!voice) voice = voices.find(v => v.lang.startsWith("en"));
+      if (!voice && voices.length > 0) voice = voices[0];
+    } else {
+      voice = voices.find(v => v.lang === lang);
+      if (!voice) voice = voices.find(v => v.lang.startsWith(lang.split("-")[0]));
+      if (!voice) voice = voices.find(v => v.lang.startsWith("en"));
+      if (!voice && voices.length > 0) voice = voices[0];
+    }
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.85;
     utterance.pitch = 1.1;
-    utterance.lang = lang;
-    window.speechSynthesis.speak(utterance);
+    utterance.lang = (voice && voice.lang) ? voice.lang : lang;
+    if (voice) utterance.voice = voice;
+    synth.speak(utterance);
   }
 }
 // ...existing code ends here...
@@ -314,7 +330,14 @@ export default function App() {
   );
 }
 
-function Flashcard({ card, flipped, onFlip }) {
+function getCardTranslation(card, lang) {
+  if (card.translations && card.translations[lang]) return card.translations[lang];
+  if (card.translations && card.translations["en-US"]) return card.translations["en-US"];
+  return card.name;
+}
+
+function Flashcard({ card, flipped, onFlip, language }) {
+  const displayName = getCardTranslation(card, language);
   return (
     <div
       className="relative w-full aspect-[3/4] max-w-xs mx-auto cursor-pointer"
@@ -334,7 +357,7 @@ function Flashcard({ card, flipped, onFlip }) {
         >
           <div className="text-center px-6">
             <h2 className="text-5xl font-extrabold text-slate-800 tracking-tight">
-              {card.name}
+              {displayName}
             </h2>
           </div>
         </div>
@@ -376,8 +399,9 @@ function FlashcardDeck({ category, onDone, language }) {
     timerRef.current = setTimeout(() => {
       setFlipped(true);
       // Every 5 cards, add encouragement after the name
+      const cardWord = getCardTranslation(cards[index], language);
       if (index > 0 && index % 5 === 0) {
-        speak(cards[index].name, language);
+        speak(cardWord, language);
         timerRef.current = setTimeout(() => {
           speakCheer(randomCheer(), language);
           timerRef.current = setTimeout(() => {
@@ -389,7 +413,7 @@ function FlashcardDeck({ category, onDone, language }) {
           }, 1200);
         }, 800);
       } else {
-        speak(cards[index].name, language);
+        speak(cardWord, language);
         timerRef.current = setTimeout(() => {
           if (index < cards.length - 1) {
             setIndex((i) => i + 1);
