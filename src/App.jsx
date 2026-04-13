@@ -194,12 +194,6 @@ export default function App() {
     setCelebrating(false);
   }, []);
 
-  // Speak a welcome message as soon as the app starts (after unlock)
-  useEffect(() => {
-    if (started && language) {
-      speak("Let's start learning!", language);
-    }
-  }, [started, language]);
 
   // Start only after user selects a language
   const handleLanguageSelect = (e) => {
@@ -244,11 +238,11 @@ export default function App() {
 
   // App header with Change Language button
   const AppHeader = () => (
-    <div className="w-full flex justify-end p-2">
+    <div className="fixed bottom-6 right-6 z-50">
       <button
         onClick={handleChangeLanguage}
-        className="px-3 py-1 rounded bg-indigo-100 text-indigo-700 font-semibold hover:bg-indigo-200 transition"
-        style={{ position: 'absolute', top: 12, right: 16, zIndex: 50 }}
+        className="px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-semibold shadow-lg hover:bg-indigo-200 transition border border-indigo-200"
+        style={{ minWidth: 48 }}
       >
         Change Language
       </button>
@@ -382,14 +376,49 @@ function FlashcardDeck({ category, onDone, language }) {
   const cards = category.cards;
   const timerRef = useRef(null);
 
-  // Intro: "Let's do Fruits!" then auto-start
-  useEffect(() => {
-    if (showIntro) {
-      speak(`Let's do ${category.label}!`, language);
-      timerRef.current = setTimeout(() => setShowIntro(false), 1500);
-      return () => clearTimeout(timerRef.current);
+  // Translated intro phrase for each language
+  function getIntroPhrase(category, lang) {
+    // Find language label from LANGUAGES array
+    const langObj = LANGUAGES.find(l => l.code === lang);
+    const langLabel = langObj ? langObj.label : lang;
+    // Always use the same pattern for all categories
+    if (lang === "en-US") {
+      return `Let's do ${category.label}!`;
     }
-  }, [showIntro, category.label, language]);
+    return `Let's do ${category.label} in ${langLabel}!`;
+  }
+
+  // Intro: Translated phrase then auto-start, ensure voices loaded
+  useEffect(() => {
+    if (!showIntro) return;
+    let voicesReady = false;
+    function doSpeak() {
+      speak(getIntroPhrase(category, language), language);
+      timerRef.current = setTimeout(() => setShowIntro(false), 1500);
+    }
+    function handleVoicesChanged() {
+      if (!voicesReady) {
+        voicesReady = true;
+        doSpeak();
+      }
+    }
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        doSpeak();
+      } else {
+        window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+      }
+    } else {
+      doSpeak();
+    }
+    return () => {
+      clearTimeout(timerRef.current);
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+      }
+    };
+  }, [showIntro, category, language]);
 
   // Card auto-play
   useEffect(() => {
@@ -436,7 +465,7 @@ function FlashcardDeck({ category, onDone, language }) {
         >
           <span className="text-7xl block mb-4">{category.emoji}</span>
           <h1 className={`text-3xl font-extrabold bg-gradient-to-r ${category.color} bg-clip-text text-transparent`}>
-            Let's do {category.label}!
+            {getIntroPhrase(category, language)}
           </h1>
         </motion.div>
       </div>
