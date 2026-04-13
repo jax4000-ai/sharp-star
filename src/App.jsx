@@ -129,6 +129,20 @@ function ShapeDisplay({ shape }) {
           <polygon points="50,5 95,50 50,95 5,50" fill="#A855F7" />
         </svg>
       );
+    case "pentagon":
+      // Pentagon points (5 sides)
+      return (
+        <svg viewBox="0 0 100 100" className={cls}>
+          <polygon points="50,10 95,38 79,90 21,90 5,38" fill="#06B6D4" />
+        </svg>
+      );
+    case "hexagon":
+      // Hexagon points (6 sides)
+      return (
+        <svg viewBox="0 0 100 100" className={cls}>
+          <polygon points="50,8 93,30 93,70 50,92 7,70 7,30" fill="#F59E42" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -199,13 +213,6 @@ export default function App() {
   const handleLanguageSelect = (e) => {
     const lang = e.target.value;
     setLanguage(lang);
-    if (audioUnlocked && "speechSynthesis" in window) {
-      const welcome = new window.SpeechSynthesisUtterance("Let's start learning!");
-      welcome.rate = 0.85;
-      welcome.pitch = 1.1;
-      welcome.lang = lang;
-      window.speechSynthesis.speak(welcome);
-    }
     setStarted(true);
   };
 
@@ -394,7 +401,7 @@ function FlashcardDeck({ category, onDone, language }) {
     let voicesReady = false;
     function doSpeak() {
       speak(getIntroPhrase(category, language), language);
-      timerRef.current = setTimeout(() => setShowIntro(false), 1500);
+      timerRef.current = setTimeout(() => setShowIntro(false), 3500);
     }
     function handleVoicesChanged() {
       if (!voicesReady) {

@@ -103,11 +103,18 @@ Vite configuration with the React plugin for JSX/fast refresh support.
 
 PostCSS pipeline with Tailwind CSS and Autoprefixer plugins.
 
-## Tech Stack
+## Features
+- Flashcards for animals, colors, shapes, and more
+- Real translations for English, Hindi, Spanish, French, Chinese, Russian
+- Text-to-Speech (TTS) for all supported languages
+- Emoji and SVG images for instant, copyright-free visuals
+- Works offline (PWA)
+- Mobile-first, touch-friendly UI
+- Encouragement and celebration sounds
 
-- **React 19** — UI framework
-- **Vite 8** — Build tool and dev server
-- **Tailwind CSS 4** — Utility-first styling
-- **Framer Motion** — Card flip animations
-- **Web Speech API** — Text-to-speech for card names and cheers
-- **Twemoji SVG** — 199 self-hosted SVGs in `public/emoji/` — zero external dependencies at runtime
+## Credits
+- Emoji art from [Twemoji](https://twemoji.twitter.com/) (CC-BY 4.0)
+- Built with React, Vite, Tailwind CSS, Framer Motion
+
+## License
+MIT
