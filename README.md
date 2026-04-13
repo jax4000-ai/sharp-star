@@ -2,7 +2,7 @@
 
 A flashcard app for toddlers. Shows emoji cards across 16 categories with text-to-speech, auto-play, and fun celebrations between categories.
 
-**Live:** https://sharpstar.surge.sh
+**Live:** https://sharp-star-2026.surge.sh
 **Google Cloud (recommended):** https://jf-tasks.web.app
 
 ## Getting Started
@@ -111,6 +111,9 @@ PostCSS pipeline with Tailwind CSS and Autoprefixer plugins.
 - Works offline (PWA)
 - Mobile-first, touch-friendly UI
 - Encouragement and celebration sounds
+
+## Live Demo
+- [Production (Surge)](https://sharp-star-2026.surge.sh)
 
 ## Credits
 - Emoji art from [Twemoji](https://twemoji.twitter.com/) (CC-BY 4.0)
