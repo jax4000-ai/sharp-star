@@ -1,6 +1,7 @@
+
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CATEGORIES from "./data";
+import CATEGORIES, { LANGUAGES } from "./data";
 
 /* ─── Twemoji: convert emoji char to local SVG path ─── */
 function emojiToTwemoji(emoji) {
@@ -10,21 +11,23 @@ function emojiToTwemoji(emoji) {
     .join("-");
   return `/emoji/${codepoints}.svg`;
 }
+// ...existing code...
 
 /* ─── Text-to-Speech helper ─── */
-function speak(text) {
+function speak(text, lang) {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.85;
     utterance.pitch = 1.1;
-    utterance.lang = "en-US";
+    utterance.lang = lang;
     window.speechSynthesis.speak(utterance);
   }
 }
+// ...existing code ends here...
 
 /* ─── Kids shouting "Hurray!" then cheer message ─── */
-function playCelebration(cheerText) {
+function playCelebration(cheerText, lang) {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
     // First: excited kid shout
@@ -32,7 +35,7 @@ function playCelebration(cheerText) {
     shout.rate = 0.9;
     shout.pitch = 2.0;
     shout.volume = 1.0;
-    shout.lang = "en-US";
+    shout.lang = lang;
     window.speechSynthesis.speak(shout);
     // Then: excited cheer message (queued after hurray)
     if (cheerText) {
@@ -40,20 +43,20 @@ function playCelebration(cheerText) {
       cheer.rate = 1.0;
       cheer.pitch = 1.4;
       cheer.volume = 1.0;
-      cheer.lang = "en-US";
+      cheer.lang = lang;
       window.speechSynthesis.speak(cheer);
     }
   }
 }
 
 /* ─── Cheer voice (for every 5 cards) ─── */
-function speakCheer(text) {
+function speakCheer(text, lang) {
   if ("speechSynthesis" in window) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
     utterance.pitch = 1.5;
     utterance.volume = 1.0;
-    utterance.lang = "en-US";
+    utterance.lang = lang;
     window.speechSynthesis.speak(utterance);
   }
 }
@@ -117,6 +120,16 @@ function ShapeDisplay({ shape }) {
 
 /* ─── Card back content (picture side) ─── */
 function CardBack({ card }) {
+  // Animal/emoji cards: render SVG from emoji
+  if (card.display) {
+    return (
+      <img
+        src={emojiToTwemoji(card.display)}
+        alt={card.name}
+        className="h-full w-full object-contain rounded-3xl"
+      />
+    );
+  }
   if (card.image) {
     return (
       <img
@@ -144,24 +157,163 @@ function CardBack({ card }) {
       </div>
     );
   }
-  if (card.display) {
-    if (card.bigLetter) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <span className="text-[14rem] font-extrabold text-white leading-none">{card.display}</span>
-        </div>
-      );
-    }
-    return (
-      <div className="flex items-center justify-center h-full p-8">
-        <img src={emojiToTwemoji(card.display)} alt={card.name} className="w-48 h-48 drop-shadow-lg" />
-      </div>
-    );
-  }
   return null;
 }
 
-/* ─── Single Flashcard ─── */
+// --- App Root ---
+export default function App() {
+  // All hooks must be at the top, before any return
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [catIndex, setCatIndex] = useState(0);
+  const [done, setDone] = useState(false);
+  const [celebrating, setCelebrating] = useState(false);
+  const [language, setLanguage] = useState("");
+
+  // Handler to reset to language selection
+  const handleChangeLanguage = useCallback(() => {
+    setStarted(false);
+    setCatIndex(0);
+    setDone(false);
+    setCelebrating(false);
+  }, []);
+
+  // Speak a welcome message as soon as the app starts (after unlock)
+  useEffect(() => {
+    if (started && language) {
+      speak("Let's start learning!", language);
+    }
+  }, [started, language]);
+
+  // Start only after user selects a language
+  const handleLanguageSelect = (e) => {
+    const lang = e.target.value;
+    setLanguage(lang);
+    if (audioUnlocked && "speechSynthesis" in window) {
+      const welcome = new window.SpeechSynthesisUtterance("Let's start learning!");
+      welcome.rate = 0.85;
+      welcome.pitch = 1.1;
+      welcome.lang = lang;
+      window.speechSynthesis.speak(welcome);
+    }
+    setStarted(true);
+  };
+
+  // Handler for the Tap to Enable Sound button
+  const handleEnableSound = () => {
+    if ("speechSynthesis" in window) {
+      const unlock = new window.SpeechSynthesisUtterance("");
+      unlock.volume = 0;
+      window.speechSynthesis.speak(unlock);
+    }
+    setAudioUnlocked(true);
+  };
+  // Unlock audio after app starts (user gesture)
+  // (No longer needed, handled in handleLanguageSelect for iOS reliability)
+
+  const handleCategoryDone = useCallback(() => setCelebrating(true), []);
+  const handleCelebrationDone = useCallback(() => {
+    setCelebrating(false);
+    if (catIndex < CATEGORIES.length - 1) {
+      setCatIndex((i) => i + 1);
+    } else {
+      setDone(true);
+    }
+  }, [catIndex]);
+  const handleRestart = useCallback(() => {
+    setCatIndex(0);
+    setDone(false);
+    setCelebrating(false);
+  }, []);
+
+  // App header with Change Language button
+  const AppHeader = () => (
+    <div className="w-full flex justify-end p-2">
+      <button
+        onClick={handleChangeLanguage}
+        className="px-3 py-1 rounded bg-indigo-100 text-indigo-700 font-semibold hover:bg-indigo-200 transition"
+        style={{ position: 'absolute', top: 12, right: 16, zIndex: 50 }}
+      >
+        Change Language
+      </button>
+    </div>
+  );
+
+  if (!audioUnlocked) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <span className="text-8xl block mb-4">🔊</span>
+          <h1 className="text-4xl font-extrabold text-slate-800 mb-2">Sharp Star™</h1>
+          <p className="text-slate-500 mb-8">Tap below to enable sound (required on iPhone/iPad)</p>
+          <button
+            onClick={handleEnableSound}
+            className="px-6 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-lg text-xl"
+          >
+            Tap to Enable Sound
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (!started) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <span className="text-8xl block mb-4">🌟</span>
+          <h1 className="text-4xl font-extrabold text-slate-800 mb-2">Sharp Star™</h1>
+          <p className="text-slate-500 mb-8">Select a language to start learning!</p>
+          <div className="mb-6">
+            <label htmlFor="language-select" className="block text-slate-700 font-semibold mb-2">Language:</label>
+            <select
+              id="language-select"
+              value={language}
+              onChange={handleLanguageSelect}
+              className="px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            >
+              <option value="" disabled>Select language…</option>
+              {LANGUAGES.map(lang => (
+                <option key={lang.code} value={lang.code}>{lang.label}</option>
+              ))}
+            </select>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative min-h-screen bg-slate-100">
+      <AppHeader />
+      {done ? (
+        <DoneScreen onRestart={handleRestart} language={language} />
+      ) : celebrating ? (
+        <CelebrationScreen
+          category={CATEGORIES[catIndex]}
+          onContinue={handleCelebrationDone}
+          language={language}
+        />
+      ) : (
+        <FlashcardDeck
+          key={catIndex}
+          category={CATEGORIES[catIndex]}
+          onDone={handleCategoryDone}
+          language={language}
+        />
+      )}
+    </div>
+  );
+}
+
 function Flashcard({ card, flipped, onFlip }) {
   return (
     <div
@@ -200,7 +352,7 @@ function Flashcard({ card, flipped, onFlip }) {
 }
 
 /* ─── Flashcard Deck (within a category) ─── */
-function FlashcardDeck({ category, onDone }) {
+function FlashcardDeck({ category, onDone, language }) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
@@ -210,11 +362,11 @@ function FlashcardDeck({ category, onDone }) {
   // Intro: "Let's do Fruits!" then auto-start
   useEffect(() => {
     if (showIntro) {
-      speak(`Let's do ${category.label}!`);
+      speak(`Let's do ${category.label}!`, language);
       timerRef.current = setTimeout(() => setShowIntro(false), 1500);
       return () => clearTimeout(timerRef.current);
     }
-  }, [showIntro, category.label]);
+  }, [showIntro, category.label, language]);
 
   // Card auto-play
   useEffect(() => {
@@ -225,9 +377,9 @@ function FlashcardDeck({ category, onDone }) {
       setFlipped(true);
       // Every 5 cards, add encouragement after the name
       if (index > 0 && index % 5 === 0) {
-        speak(cards[index].name);
+        speak(cards[index].name, language);
         timerRef.current = setTimeout(() => {
-          speakCheer(randomCheer());
+          speakCheer(randomCheer(), language);
           timerRef.current = setTimeout(() => {
             if (index < cards.length - 1) {
               setIndex((i) => i + 1);
@@ -237,7 +389,7 @@ function FlashcardDeck({ category, onDone }) {
           }, 1200);
         }, 800);
       } else {
-        speak(cards[index].name);
+        speak(cards[index].name, language);
         timerRef.current = setTimeout(() => {
           if (index < cards.length - 1) {
             setIndex((i) => i + 1);
@@ -248,7 +400,7 @@ function FlashcardDeck({ category, onDone }) {
       }
     }, 500);
     return () => clearTimeout(timerRef.current);
-  }, [index, cards, showIntro, onDone]);
+  }, [index, cards, showIntro, onDone, language]);
 
   if (showIntro) {
     return (
@@ -314,10 +466,10 @@ function FlashcardDeck({ category, onDone }) {
 }
 
 /* ─── Done Screen ─── */
-function DoneScreen({ onRestart }) {
+function DoneScreen({ onRestart, language }) {
   useEffect(() => {
-    playCelebration("Yay! Great job! You finished everything! You are a super star!");
-  }, []);
+    playCelebration("Yay! Great job! You finished everything! You are a super star!", language);
+  }, [language]);
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
@@ -346,13 +498,13 @@ function DoneScreen({ onRestart }) {
 }
 
 /* ─── Celebration Screen (between categories) ─── */
-function CelebrationScreen({ category, onContinue }) {
+function CelebrationScreen({ category, onContinue, language }) {
+  const cheer = React.useMemo(() => randomCheer(), []);
   useEffect(() => {
-    const cheer = randomCheer();
-    playCelebration(`${cheer} You finished ${category.label}!`);
+    playCelebration(`${cheer} You finished ${category.label}!`, language);
     const t = setTimeout(onContinue, 7000);
     return () => clearTimeout(t);
-  }, [category, onContinue]);
+  }, [category, onContinue, cheer, language]);
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
@@ -367,7 +519,7 @@ function CelebrationScreen({ category, onContinue }) {
           transition={{ duration: 0.6, repeat: 3 }}
         >👏</motion.span>
         <h1 className={`text-3xl font-extrabold bg-gradient-to-r ${category.color} bg-clip-text text-transparent mb-2`}>
-          {randomCheer()}
+          {cheer}
         </h1>
         <p className="text-slate-500 text-lg">You finished {category.label}!</p>
         <p className="text-3xl mt-3">🌟⭐🎉⭐🌟</p>
@@ -407,77 +559,3 @@ function CategoryGrid({ onSelect }) {
   );
 }
 
-/* ─── App Root — auto-flows through all categories ─── */
-export default function App() {
-  const [started, setStarted] = useState(false);
-  const [catIndex, setCatIndex] = useState(0);
-  const [done, setDone] = useState(false);
-  const [celebrating, setCelebrating] = useState(false);
-
-  const handleStart = useCallback(() => {
-    unlockAudio();
-    setStarted(true);
-  }, []);
-
-  const handleCategoryDone = useCallback(() => {
-    setCelebrating(true);
-  }, []);
-
-  const handleCelebrationDone = useCallback(() => {
-    setCelebrating(false);
-    if (catIndex < CATEGORIES.length - 1) {
-      setCatIndex((i) => i + 1);
-    } else {
-      setDone(true);
-    }
-  }, [catIndex]);
-
-  const handleRestart = useCallback(() => {
-    setCatIndex(0);
-    setDone(false);
-    setCelebrating(false);
-  }, []);
-
-  if (!started) {
-    return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <span className="text-8xl block mb-4">🌟</span>
-          <h1 className="text-4xl font-extrabold text-slate-800 mb-2">Sharp Star™</h1>
-          <p className="text-slate-500 mb-8">Tap to start learning!</p>
-          <button
-            onClick={handleStart}
-            className="px-8 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xl font-bold shadow-lg active:scale-95 transition-transform"
-          >
-            ▶ Start
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (done) {
-    return <DoneScreen onRestart={handleRestart} />;
-  }
-
-  if (celebrating) {
-    return (
-      <CelebrationScreen
-        category={CATEGORIES[catIndex]}
-        onContinue={handleCelebrationDone}
-      />
-    );
-  }
-
-  return (
-    <FlashcardDeck
-      key={catIndex}
-      category={CATEGORIES[catIndex]}
-      onDone={handleCategoryDone}
-    />
-  );
-}

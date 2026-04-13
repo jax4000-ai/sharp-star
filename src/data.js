@@ -1,7 +1,19 @@
+
 /*
   Sharp Star — Flashcard Data
   All emoji — no copyright issues, no broken images, instant loading.
 */
+
+// Supported languages for TTS
+export const LANGUAGES = [
+  { code: "en-US", label: "English" },
+  { code: "ml-IN", label: "Malayalam" },
+  { code: "hi-IN", label: "Hindi" },
+  { code: "es-ES", label: "Spanish" },
+  { code: "zh-CN", label: "Chinese" },
+  { code: "fr-FR", label: "French" },
+  { code: "ru-RU", label: "Russian" },
+];
 
 const CATEGORIES = [
   {

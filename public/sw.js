@@ -9,7 +9,7 @@ self.addEventListener("install", (event) => {
         "/index.html",
         "/manifest.json",
         "/icon-192.svg",
-        "/icon-512.svg",
+        "/icon-512.svg"
       ]);
     })
   );
@@ -32,6 +32,9 @@ self.addEventListener("fetch", (event) => {
 
   // Skip non-GET requests
   if (request.method !== "GET") return;
+
+  // Skip non-HTTP(S) requests (e.g., chrome-extension://)
+  if (!request.url.startsWith("http")) return;
 
   // For navigation requests, try network first then cache
   if (request.mode === "navigate") {
