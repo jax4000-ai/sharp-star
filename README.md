@@ -103,6 +103,9 @@ Vite configuration with the React plugin for JSX/fast refresh support.
 
 PostCSS pipeline with Tailwind CSS and Autoprefixer plugins.
 
+## Live Demo
+- [Production (Surge)](https://sharp-star-2026.surge.sh)
+
 ## Features
 - Flashcards for animals, colors, shapes, and more
 - Real translations for English, Hindi, Spanish, French, Chinese, Russian
@@ -111,9 +114,6 @@ PostCSS pipeline with Tailwind CSS and Autoprefixer plugins.
 - Works offline (PWA)
 - Mobile-first, touch-friendly UI
 - Encouragement and celebration sounds
-
-## Live Demo
-- [Production (Surge)](https://sharp-star-2026.surge.sh)
 
 ## Credits
 - Emoji art from [Twemoji](https://twemoji.twitter.com/) (CC-BY 4.0)
