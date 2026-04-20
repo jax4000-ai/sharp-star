@@ -1,113 +1,70 @@
-# Sharp Star ⭐™
+# Puzzle Star
 
-A flashcard app for toddlers. Shows emoji cards across 16 categories with text-to-speech, auto-play, and fun celebrations between categories.
+An interactive A-Z letter puzzle app for toddlers. Kids drag puzzle pieces to match a letter with its picture and word, building early literacy skills through play.
 
-**Live:** https://sharpstar.surge.sh
-**Google Cloud (recommended):** https://jf-tasks.web.app
+## Live Demo
 
-## Getting Started
+https://puzzle-star.surge.sh
 
-### Prerequisites
+## Features
 
-- [Node.js](https://nodejs.org/) (v18 or later)
-- npm (comes with Node.js)
+- A-Z drag-and-drop puzzle -- each letter has a matching picture (emoji) and word
+- 3-piece puzzle assembly -- Letter + Image + Word pieces snap together as the child solves each step
+- Voice narration -- "Let's do A!" spoken on every new letter; correct answers read aloud; random encouragement after each completed puzzle
+- Toddler-friendly UX -- large puzzle-shaped tiles, generous drop zones, shake animation on wrong answers
+- Progress bar -- tracks progress through all 26 letters
+- Replay button to hear the letter prompt again
 
-### Install & Run
+## Encouragement Phrases
 
-```bash
-# Install dependencies
-npm install
+After every completed puzzle the app randomly says one of:
+"Amazing work!", "You're so smart!", "Fantastic!", "Brilliant!",
+"You're a star!", "Wonderful!", "Keep it up!", "You rock!",
+"Super job!", "Awesome!", "Well done!", "You did it!",
+"That's incredible!", "I'm so proud of you!", "You're doing great!"
 
-# Start dev server (opens at http://localhost:5173)
-npm run dev
+## How to Play
 
-# Build for production
-npm run build
-
-# Preview production build locally
-npm run preview
-```
-
-### Deploy
-
-```bash
-# Deploy to Surge
-npx surge dist sharpstar.surge.sh
-
-# Deploy to Firebase
-npx firebase deploy
-```
-
-## How It Works
-
-The app auto-plays through 16 emoji categories (20 cards each). Each card flips to reveal the emoji, speaks the name aloud, and moves to the next. Every 5 cards there's an encouraging cheer, and between categories there's an excited celebration with a cheer message. A final done screen appears at the end.
-
-## Project Structure
-
-```
-sharp-star/
-├── index.html          # Entry HTML — contains SVG star favicon and page title
-├── package.json        # Dependencies and npm scripts
-├── vite.config.js      # Vite bundler config with React plugin
-├── postcss.config.js   # PostCSS config for Tailwind CSS
-├── firebase.json       # Firebase Hosting configuration
-├── .firebaserc         # Firebase project alias
-├── .gitignore          # Files excluded from git (node_modules, dist)
-├── public/
-│   └── emoji/          # 199 self-hosted Twemoji SVGs (no CDN dependency)
-└── src/
-    ├── main.jsx        # App entry point — mounts React to the DOM
-    ├── App.jsx         # All components and logic (see below)
-    ├── data.js         # 16 categories with 20 emoji cards each
-    └── index.css       # Tailwind CSS imports and global styles
-```
-
-## File Details
-
-### `src/App.jsx`
-
-The main application file containing all components and helpers:
-
-- **`speak(text)`** — Text-to-speech for card names (Web Speech API)
-- **`speakCheer(text)`** — Excited cheer voice for every-5-cards encouragement
-- **`playCelebration(cheerText)`** — Excited celebration shout followed by a cheer message (used between categories and on the done screen)
-- **`emojiToTwemoji(emoji)`** — Converts emoji characters to local Twemoji SVG paths (`/emoji/*.svg`)
-- **`unlockAudio()`** — Unlocks audio on iOS Safari (requires user tap)
-- **`randomCheer()`** — Picks a random encouragement phrase ("Yay!", "Super!", "Awesome!", etc.)
-- **`ShapeDisplay`** — Renders SVG shapes (circle, square, triangle, star, heart, diamond)
-- **`CardBack`** — Renders the back of a card: Twemoji SVG, color swatch, shape, or big letter
-- **`Flashcard`** — Flip card with Framer Motion rotateY animation
-- **`FlashcardDeck`** — Auto-plays through cards in a category with speech and cheers
-- **`CelebrationScreen`** — Animated screen between categories with celebration cheer
-- **`DoneScreen`** — Final celebration screen with bouncing confetti and restart button
-- **`CategoryGrid`** — Grid of category buttons (used in manual mode)
-- **`App`** — Root component managing start → play → celebrate → done flow
-
-### `src/data.js`
-
-Contains the `CATEGORIES` array with 16 categories, each having 20 cards. Categories in order:
-
-Animals, Colors, Shapes, Family, Fruits, Baby Animals, Birds, Playground, Planets, Food, Countries, Cartoons, Small Words, Alphabets, Numbers
-
-Each card has: `name`, `emoji`, `display` type, and optional properties like `hex` (colors), `shape` (shapes), or `bigLetter` (alphabets/numbers).
-
-### `index.html`
-
-HTML shell with a gold star SVG favicon, Apple touch icon (gold star on purple background), and the "Sharp Star™" title.
-
-### `vite.config.js`
-
-Vite configuration with the React plugin for JSX/fast refresh support.
-
-### `postcss.config.js`
-
-PostCSS pipeline with Tailwind CSS and Autoprefixer plugins.
+1. A letter piece appears on screen with two empty slots
+2. Step 1 -- drag the correct picture tile into the image slot
+3. Step 2 -- drag the correct word tile into the word slot
+4. All 3 pieces lock together -- celebration + voice encouragement
+5. Tap Next to move to the next letter
 
 ## Tech Stack
 
-- **React 19** — UI framework
-- **Vite 8** — Build tool and dev server
-- **Tailwind CSS 4** — Utility-first styling
-- **Framer Motion** — Card flip animations
-- **Web Speech API** — Text-to-speech for card names and cheers
-- **Twemoji SVG** — 199 self-hosted SVGs in `public/emoji/` — zero external dependencies at runtime
+- UI: React 19 + Tailwind CSS v4
+- Animations: Framer Motion
+- Mobile: Capacitor (Android)
+- Hosting: Surge.sh
+
+## Getting Started
+
+    npm install        # install dependencies
+    npm run dev        # run development server
+    npm run build      # build for production
+    npx surge dist puzzle-star.surge.sh   # deploy to Surge
+    npx cap sync android                  # sync Android
+    npx cap open android                  # open Android Studio
+
+## Project Structure
+
+    src/
+      LetterPuzzle.jsx   Main puzzle component (A-Z drag-and-drop)
+      App.jsx            Original flashcard app
+      main.jsx           Entry point (renders LetterPuzzle)
+    android/             Capacitor Android project
+    public/              Static assets and PWA manifest
+
+## Puzzle Data (A-Z)
+
+A=Apple  B=Ball  C=Cat  D=Dog  E=Elephant
+F=Fish   G=Grape H=House I=Ice Cream J=Jungle
+K=Kite   L=Lion  M=Monkey N=Nut O=Octopus
+P=Pizza  Q=Queen R=Rainbow S=Star T=Tiger
+U=Umbrella V=Vanilla W=Whale X=Xylophone
+Y=Yacht  Z=Zebra
+
+## License
+
+MIT
